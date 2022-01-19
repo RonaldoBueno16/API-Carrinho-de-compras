@@ -1,9 +1,12 @@
 const express = require('express');
 
-const Controller = require('../controllers/Controller');
+const UserController = require('../controllers/UserController');
 
 var router = express.Router();
 
-router.post("/api/v1/post/cadastro", Controller.cadastro); //Cadastrar usuário no banco
+//Rotas de usuários
+router.post("/api/v1/post/cadastro", UserController.cadastro); //Cadastrar usuário no banco
+
+//Rotas do carrinho
 
 module.exports = router;

@@ -1,4 +1,5 @@
 const express = require('express');
+const bodyParser = require('body-parser');
 const cors = require('cors');
 const routes = require('../routes/routes');
 
@@ -10,6 +11,7 @@ class App {
     }
 
     middlewares() {
+        this.app.use(bodyParser.json());
         this.app.use(express.json());
         this.app.use((req, res, next) => {
             res.header("Access-Controll-Allow-Origin", "*");

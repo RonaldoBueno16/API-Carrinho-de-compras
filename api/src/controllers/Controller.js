@@ -1,6 +1,10 @@
+//Classe do banco de dados
+const database = require('../models/Database');
+
+//Controller das rotas
 class Controller {
-    listarprodutos(req, res) {
-        
+    cadastro(req, res) {
+        database.cadastro();
     }
 }
 

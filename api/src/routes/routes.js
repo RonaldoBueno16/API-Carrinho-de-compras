@@ -4,6 +4,6 @@ const Controller = require('../controllers/Controller');
 
 var router = express.Router();
 
-router.get("/api/v1/get/produtos", Controller.listarprodutos);
+router.post("/api/v1/post/cadastro", Controller.cadastro); //Cadastrar usuário no banco
 
 module.exports = router;

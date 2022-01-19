@@ -1,0 +1,27 @@
+{
+  "name": "carrinho",
+  "version": "1.0.0",
+  "description": "Desafio da loja integrada - Carrinho de Compras",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "nodemon src/index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/RonaldoBueno16/Loja-Integrada.git"
+  },
+  "author": "Ronaldo Bueno",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/RonaldoBueno16/Loja-Integrada/issues"
+  },
+  "homepage": "https://github.com/RonaldoBueno16/Loja-Integrada#readme",
+  "devDependencies": {
+    "nodemon": "^2.0.15"
+  },
+  "dependencies": {
+    "express": "^4.17.2",
+    "mysql": "^2.18.1"
+  }
+}

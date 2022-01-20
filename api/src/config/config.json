@@ -1,9 +1,9 @@
 {
   "development": {
-    "username": "root",
-    "password": null,
-    "database": "database_development",
-    "host": "127.0.0.1",
+    "username": "user_aed1",
+    "password": "12345",
+    "database": "loja_integrada",
+    "host": "198.100.155.70",
     "dialect": "mysql"
   },
   "test": {

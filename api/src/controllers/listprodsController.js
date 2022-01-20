@@ -1,10 +1,5 @@
-const {Validator} = require('jsonschema');
-
 //Database
 const database = require('../models').produtos;
-
-//Validação de JSON - JSONSCHEMA
-const v = new Validator();
 
 //Web Token
 const jwt = require('jsonwebtoken');

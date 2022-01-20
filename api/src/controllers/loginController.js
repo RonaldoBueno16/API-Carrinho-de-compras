@@ -25,10 +25,11 @@ const login = async (req, res) => {
             const check_account = await database.findOne({where: {email: data.email, password: data.password}});
             
             if(check_account != null) {
+                //OBS: Irá gerar um novo token à cada login, evitando duas pessoas acessando a conta ao mesmo tempo!
                 const token = jwt.sign({id: check_account.id}, process.env.SECRET, {
                     expiresIn: 1800 //Token válido por 30 minutos
                 });
-
+                
                 check_account.token = token;
                 await check_account.save();
 

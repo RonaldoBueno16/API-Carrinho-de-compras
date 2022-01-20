@@ -11,11 +11,17 @@ module.exports = {
       nome: {
         type: Sequelize.STRING
       },
+      descricao: {
+        type: Sequelize.STRING
+      },
       preco: {
         type: Sequelize.DOUBLE
       },
-      type: {
+      estoque: {
         type: Sequelize.INTEGER
+      },
+      disponivel: {
+        type: Sequelize.BOOLEAN
       },
       createdAt: {
         allowNull: false,

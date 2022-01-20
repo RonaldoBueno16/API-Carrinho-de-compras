@@ -25,19 +25,35 @@ class UserController {
 
         if(v.validate(data, schema).valid) {
             try {
-                const response = await database.create({
-                    email: data.email,
-                    password: data.password,
-                    createdAt: new Date(),
-                    updateAt: new Date()
+                //Verificação de email duplicado
+                const check_email = await database.findOne({
+                    where: {email: data.email}
                 });
+                
+                if(check_email == null) {
+                    const response = await database.create({
+                        email: data.email,
+                        password: data.password,
+                        createdAt: new Date(),
+                        updateAt: new Date()
+                    });
+    
+                    return res.status(200).json({
+                        success: true,
+                        http_response: 200,
+                        message: 'Usuário cadastrado com sucesso!',
+                        userid: response.id
+                    })
+                }
+                else {
+                    res.status(406).json({
+                        success: false,
+                        http_response: 406,
+                        message: 'Endereço de email já existente no banco de dados!'
+                    })
+                }
 
-                return res.status(200).json({
-                    success: true,
-                    http_response: 200,
-                    message: 'Usuário cadastrado com sucesso!',
-                    userid: response.id
-                })
+                
             }
             catch(e) {
                 return res.status(500).json({

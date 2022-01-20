@@ -1,6 +1,9 @@
+const fs = require('fs');
 const express = require('express');
 const cors = require('cors');
-const routes = require('../routes/routes');
+// const routes = require('../routes/routes');
+
+const routePath = './src/routes/';
 
 class App {
     constructor() {
@@ -22,7 +25,10 @@ class App {
     }
     
     routes() {
-        this.app.use(routes);
+        fs.readdirSync(routePath).forEach((file) => {
+            this.app.use(require(`../routes/${file}`));
+        })
+        // this.app.use(routes);
     }
 }
 

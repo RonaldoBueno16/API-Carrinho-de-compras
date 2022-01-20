@@ -1,4 +1,4 @@
-const app = require('./config/customExpress')
+const app = require('./src/config/customExpress')
 require('dotenv').config();
 
 const PORT = process.env.PORT || 3000;

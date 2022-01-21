@@ -20,6 +20,9 @@ module.exports = {
       subtotal: {
         type: Sequelize.DOUBLE
       },
+      cupom: {
+        type: Sequelize.INTEGER
+      },
       createdAt: {
         allowNull: false,
         type: Sequelize.DATE

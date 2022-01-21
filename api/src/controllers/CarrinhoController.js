@@ -12,6 +12,7 @@ const database_usuarios = require('../models').usuarios;
 const database_prods = require('../models').produtos;
 const database_carrinhos = require('../models').carrinhos;
 const database_itens_carrinho = require('../models').itens_carrinho;
+const database_cupons = require('../models').cupons;
 
 class CarrinhoController {
     static async getCarrinho(req, res, next) {
@@ -53,6 +54,8 @@ class CarrinhoController {
             //Buscar
             res.status(200).json({
                 success: true,
+                cupom: carrinho.cupomname,
+                cupom_percent: carrinho.cupompercent,
                 num_produtos: carrinho.num_produtos,
                 carrinho_id: carrinho.id,
                 total: carrinho.total,
@@ -98,14 +101,7 @@ class CarrinhoController {
         if(!v.validate(data, schema).valid) {
             return res.status(400).json({
                 success: false,
-                message: "Objeto de entrada inválido",
-                json_expected: {
-                    carrinho_id: 'ID do carrinho',
-                    produtos: [{
-                        produto_id: 'ID do produto',
-                        quantidade: 'Quantidade do produto'
-                    }]
-                }
+                message: "Objeto de entrada inválido"
             });
         }
         
@@ -181,6 +177,8 @@ class CarrinhoController {
             res.status(200).json({
                 success: true,
                 message: "Produtos inseridos com sucesso!",
+                cupom: carrinho.cupomname,
+                cupom_percent: carrinho.cupompercent,
                 num_produtos: carrinho.num_produtos,
                 carrinho_id: carrinho.id,
                 total: carrinho.total,
@@ -224,14 +222,7 @@ class CarrinhoController {
         if(!v.validate(data, schema).valid) {
             return res.status(400).json({
                 success: false,
-                message: "Objeto de entrada inválido",
-                json_expected: {
-                    carrinho_id: 'ID do carrinho',
-                    produtos: [{
-                        produto_id: 'ID do produto',
-                        quantidade: 'Quantidade do produto para remover'
-                    }]
-                }
+                message: "Objeto de entrada inválido"
             });
         }
         
@@ -328,6 +319,8 @@ class CarrinhoController {
             res.status(200).json({
                 success: true,
                 message: "Itens removidos com sucesso, mostrando o carrinho atualizado!",
+                cupom: carrinho.cupomname,
+                cupom_percent: carrinho.cupompercent,
                 num_produtos: carrinho.num_produtos,
                 carrinho_id: carrinho.id,
                 total: carrinho.total,
@@ -361,10 +354,7 @@ class CarrinhoController {
         if(!v.validate(data, schema).valid) {
             return res.status(400).json({
                 success: false,
-                message: "Objeto de entrada inválido",
-                json_expected: {
-                    carrinho_id: 'ID do carrinho'
-                }
+                message: "Objeto de entrada inválido"
             });
         }
 
@@ -405,6 +395,8 @@ class CarrinhoController {
             res.status(200).json({
                 success: true,
                 message: "Carrinho limpo com sucesso!",
+                cupom: carrinho.cupomname,
+                cupom_percent: carrinho.cupompercent,
                 num_produtos: carrinho.num_produtos,
                 carrinho_id: carrinho.id,
                 total: carrinho.total,
@@ -420,6 +412,221 @@ class CarrinhoController {
             });
         }
 
+    }
+
+    static async atualizarCarrinho(req, res, next) {
+        const user_id = req.user_id;
+
+        const schema = {
+            type: 'object',
+            properties: {
+                carrinho_id: {type: 'integer'}, //Obrigatório passar o ID do carrinho
+                cupom: {type: 'string'}, //Parâmetro opcional
+                produtos: {
+                    type: 'array',
+                    items: {
+                        type: 'object',
+                        properties: {
+                            produto_id: {type: 'integer'},
+                            quantidade: {type: 'integer'}
+                        },
+                        required: ['produto_id']
+                    }
+                }
+            },
+            required: ['carrinho_id']
+        }
+
+        //Elementos aceitos para atualizar os produtos
+        const schemaProdutos = [
+            'quantidade'
+        ]
+
+        const data = req.body;
+        
+        //Verificar se o JSON informado é o que se espera
+        if(!v.validate(data, schema).valid) {
+            return res.status(400).json({
+                success: false,
+                message: "Objeto de entrada inválido"
+            });
+        }
+
+        //Iniciando validações com o banco de dados
+        try {
+            //Se o carrinho é nulo || Se o carrinho pertence ao usuário 
+            let check = await database_carrinhos.findByPk(data.carrinho_id);
+            if(check == null) {
+                return res.status(404).json({
+                    success: false,
+                    message: "Carrinho inválido!"
+                })
+            }
+            if(check.usuarios_id != user_id) {
+                return res.status(404).json({
+                    success: false,
+                    message: "Esse carrinho não pertence ao seu usuário!"
+                });
+            }
+
+            const errors = [];
+            let cupom;
+            
+            //Consulta nos itens do carrinho do usuário para uso posterior
+            const itens_carrinho = await database_itens_carrinho.findAll({where: {carrinhos_id: data.carrinho_id}});
+            
+            //Validação de cupom (OPCIONAL)
+            if(data.cupom != undefined && data.cupom != "") {
+                //Buscar cupom
+                check = await database_cupons.findOne({where: {codigo: data.cupom}});
+                if(check == null) {
+                    errors.push("Cupom inválido");
+                }
+
+                //Salvar cupom para adicionar ao carrinho após outras validações
+                cupom = check == null ? (null) : (check.id);
+            }
+
+            //Validação na array dos produtos
+            if(data.produtos != undefined) {
+                const produtos = data.produtos;
+
+                //Verificar se o usuário informou uma array de objetos de produtos
+                if(produtos.length == 0) {
+                    return res.status(404).json({
+                        success: false,
+                        message: 'Array de produtos vazia'
+                    })
+                }
+
+                //Verificar se tem algo no carrinho do usuário
+                if(itens_carrinho.length == 0) {
+                    return res.status(404).json({
+                        success: false,
+                        message: 'O carrinho do usuário está vazio'
+                    })
+                }
+                for(let idx in produtos) {
+                    const produto = produtos[idx];
+
+                    //Caso não tenha nenhum elemento para o produto
+                    if(Object.keys(produto).length == 0) {
+                        errors.push(`Objeto de produto vazio - Array ID: ${idx}`);
+                        continue;
+                    }
+                    for(let idkey in Object.keys(produto)) {
+                        if(Object.keys(produto)[idkey] == 'produto_id') continue;
+                        if(!Object.keys(produto)[idkey].includes(schemaProdutos)) {
+                            errors.push(`O elemento ${Object.keys(produto)[idkey]} não é aceito para atualização dos produtos`);
+                            continue;
+                        }
+                    }
+
+                    //Verificar se o produto está no carrinho do cliente
+                    let encontrou = false;
+                    for(let idc in itens_carrinho) {
+                        const item = itens_carrinho[idc];
+                        if(produto.produto_id == item.produtos_id) {
+                            encontrou = true;
+                            break;
+                        }
+                    }
+                    if(!encontrou) {
+                        errors.push(`O produto ID ${produto.produto_id} não pertence ao carrinho do usuário`);
+                    }
+
+                    //Verificar se a nova quantidade condiz com o estoque
+                    const estoque = await database_prods.findByPk(produto.produto_id);
+                    if(produto.quantidade > estoque.estoque) {
+                        errors.push(`O produto ID ${produto.produto_id} só tem ${estoque.estoque} unidades no estoque`);
+                    }
+                }
+            }
+            
+            if(errors.length) {
+                return res.status(404).json({
+                    success: false,
+                    message: "Houve erro de validação",
+                    errors: errors
+                })
+            }
+
+            //Setar cupom ao carrinho
+            if(cupom != null) {
+                check = await database_carrinhos.findByPk(data.carrinho_id);
+
+                check.cupom = cupom;
+                await check.save();
+            }
+
+            //Remover cupom do carrinho
+            if(data.cupom == "") {
+                check = await database_carrinhos.findByPk(data.carrinho_id);
+
+                check.cupom = null;
+                await check.save();
+            }
+
+            //Atualizar os produtos no carrinho
+            if(data.produtos != undefined) {
+                const produtos = data.produtos;
+                
+                for(let idx in produtos) {
+                    const produto = produtos[idx];
+                    const keys = Object.keys(produto);
+                    
+                    for(let keyx in keys) {
+                        const key = keys[keyx];
+                        if(key == 'produto_id') continue;
+
+                        switch(key) {
+                            case 'quantidade': { //Atualizar a quantidade de item no carrinho (Remover caso a quantidade zere)
+                                let idc;
+                                for(let x in itens_carrinho) { //Uso da matriz para remover o item, evitando consulta ao banco para buscar ao item
+                                    if(itens_carrinho[x].produtos_id == produto.produto_id) {
+                                        idc = x;
+                                        break;
+                                    }
+                                }
+                                
+                                if(produto.quantidade == 0) { //Remover item do carrinho
+                                    await itens_carrinho[idc].destroy();
+                                    break;
+                                }
+                                
+                                //Atualizar quantidade de item no carrinho
+                                itens_carrinho[idc].quantidade = produto.quantidade;
+                                await itens_carrinho[idc].save();
+                                break;
+                            }
+                        }
+                    }
+                }
+            }
+            
+            //Carregar o carrinho
+            const carrinho = await CarregarCarrinho(user_id);
+            
+            //Retornar o carrinho completo com os novos itens
+            res.status(200).json({
+                success: true,
+                message: "Carrinho atualizado com sucesso!",
+                cupom: carrinho.cupomname,
+                cupom_percent: carrinho.cupompercent,
+                num_produtos: carrinho.num_produtos,
+                carrinho_id: carrinho.id,
+                total: carrinho.total,
+                subtotal: carrinho.subtotal,
+                itens_carrinho: carrinho.itens_carrinho
+            });
+        }
+        catch (e) {
+            return res.status(500).json({
+                success: false,
+                message: "Não foi possível limpar o carrinho do usuário",
+                error: e.message
+            });
+        }
     }
 }
 
@@ -485,9 +692,27 @@ async function CarregarCarrinho(user_id) {
     }
 
     carrinho.num_produtos = carrinho.itens_carrinho.length;
+
+    //Aplicar cupom
+    let sub_total = valor_total;
+    carrinho.cupomname = null;
+    carrinho.cupompercent = null;
+    if(carrinho.cupom != null) {
+        const cupom = await database_cupons.findByPk(carrinho.cupom);
+        if(cupom == null) { //Cupom desativado
+            carrinho.cupom = null;
+        }
+        else {
+            sub_total -= valor_total*cupom.desconto;
+            carrinho.cupomname = cupom.codigo;
+            carrinho.cupompercent = `${cupom.desconto*100}%`;
+        }
+    }
+    
     carrinho.total = valor_total;
-    carrinho.subtotal = valor_total;
+    carrinho.subtotal = sub_total;
     carrinho.save();
+
 
     return carrinho;
 }

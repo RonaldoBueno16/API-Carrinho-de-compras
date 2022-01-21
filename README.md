@@ -11,6 +11,7 @@
 <code>docker build -t mysql-image -f ${pwd}/db/Dockerfile .</code></br>
 <code>docker run --rm --name=mysql-container --env MYSQL_ROOT_PASSWORD=lojaintegrada --detach --publish 3306:3306 mysql</code>
 #### 3 - Popular o banco de dados com os dados iniciais:
+###### NO POWERSHELL: <code>cmd /c "docker exec -i mysql-container mysql -uroot -plojaintegrada < script.sql"</code>
 
 #### 4 - Iniciar a API, dentro da pasta raiz do projeto(.../Loja Integrada) USE:
 <code>docker build -t api_carrinho ${pwd}/api/</code></br>

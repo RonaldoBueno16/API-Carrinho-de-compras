@@ -39,13 +39,6 @@ CREATE TABLE IF NOT EXISTS `carrinhos` (
   `updatedAt` datetime NOT NULL
 ) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8;
 
---
--- Extraindo dados da tabela `carrinhos`
---
-
-INSERT INTO `carrinhos` (`id`, `usuarios_id`, `num_produtos`, `total`, `subtotal`, `cupom`, `createdAt`, `updatedAt`) VALUES
-(1, 21, 3, 359, 359, NULL, '2022-01-21 04:33:07', '2022-01-21 05:13:21'),
-(2, 22, 2, 257, 244.15, 1, '2022-01-21 12:45:19', '2022-01-21 15:09:38');
 
 -- --------------------------------------------------------
 
@@ -82,17 +75,6 @@ CREATE TABLE IF NOT EXISTS `itens_carrinhos` (
   `createdAt` datetime NOT NULL,
   `updatedAt` datetime NOT NULL
 ) ENGINE=InnoDB AUTO_INCREMENT=17 DEFAULT CHARSET=utf8;
-
---
--- Extraindo dados da tabela `itens_carrinhos`
---
-
-INSERT INTO `itens_carrinhos` (`id`, `carrinhos_id`, `produtos_id`, `quantidade`, `createdAt`, `updatedAt`) VALUES
-(3, 1, 1, 2, '2022-01-21 05:13:20', '2022-01-21 05:13:20'),
-(4, 1, 2, 1, '2022-01-21 05:13:20', '2022-01-21 05:13:20'),
-(5, 1, 3, 2, '2022-01-21 05:13:20', '2022-01-21 05:13:20'),
-(15, 2, 3, 2, '2022-01-21 14:39:26', '2022-01-21 14:52:20'),
-(16, 2, 1, 1, '2022-01-21 14:50:31', '2022-01-21 14:51:39');
 
 -- --------------------------------------------------------
 
@@ -169,34 +151,6 @@ CREATE TABLE IF NOT EXISTS `usuarios` (
   `updatedAt` datetime NOT NULL,
   `token` varchar(255) DEFAULT NULL
 ) ENGINE=InnoDB AUTO_INCREMENT=27 DEFAULT CHARSET=utf8;
-
---
--- Extraindo dados da tabela `usuarios`
---
-
-INSERT INTO `usuarios` (`id`, `email`, `password`, `createdAt`, `updatedAt`, `token`) VALUES
-(1, 'andremerli74@gmail.com', '123', '2022-01-21 04:24:33', '2022-01-21 04:24:33', NULL),
-(2, 'zxhbpg@jmurip.com', '123', '2022-01-21 04:24:33', '2022-01-21 04:24:33', NULL),
-(3, 'pmlxew@veracg.com', '123', '2022-01-21 04:24:33', '2022-01-21 04:24:33', NULL),
-(4, 'cgbvud@lxvhhq.com', '123', '2022-01-21 04:24:33', '2022-01-21 04:24:33', NULL),
-(5, 'carmed@usp.br', '123', '2022-01-21 04:24:33', '2022-01-21 04:24:33', NULL),
-(6, 'caueameni@gmail.com', '123', '2022-01-21 04:24:33', '2022-01-21 04:24:33', NULL),
-(7, 'claudiomsi@hotmail.com', '123', '2022-01-21 04:24:33', '2022-01-21 04:24:33', NULL),
-(8, 'daisyess@gmail.com', '123', '2022-01-21 04:24:33', '2022-01-21 04:24:33', NULL),
-(9, 'abr@hotmail.com', '123', '2022-01-21 04:24:33', '2022-01-21 04:24:33', NULL),
-(10, 'deuzimarcorreiadesantana@gmail.com', '123', '2022-01-21 04:24:33', '2022-01-21 04:24:33', NULL),
-(11, 'dfqjjd@fettiv.com', '123', '2022-01-21 04:24:33', '2022-01-21 04:24:33', NULL),
-(12, 'gregb@hotmail.com', '123', '2022-01-21 04:24:33', '2022-01-21 04:24:33', NULL),
-(13, 'ucmnyo@afyyrn.com', '123', '2022-01-21 04:24:33', '2022-01-21 04:24:33', NULL),
-(14, 'itaperuna@gmail.com', '123', '2022-01-21 04:24:33', '2022-01-21 04:24:33', NULL),
-(15, 'edw_drum@hotmail.com', '123', '2022-01-21 04:24:33', '2022-01-21 04:24:33', NULL),
-(16, 'etechy@tre-pr.jus.br', '123', '2022-01-21 04:24:33', '2022-01-21 04:24:33', NULL),
-(17, 'fabiosilvarodolpho@gmail.com', '123', '2022-01-21 04:24:33', '2022-01-21 04:24:33', NULL),
-(18, 'feliperepresentante@yahoo.com.br', '123', '2022-01-21 04:24:33', '2022-01-21 04:24:33', NULL),
-(19, 'financeiro@Yahoo.com.br', '123', '2022-01-21 04:24:33', '2022-01-21 04:24:33', NULL),
-(20, 'fernandopontes@outlook.com', '123', '2022-01-21 04:24:33', '2022-01-21 04:24:33', NULL),
-(21, 'ronaldobueno2002@gmail.com', '123', '2022-01-21 04:32:59', '2022-01-21 04:41:05', 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MjEsImlhdCI6MTY0Mjc0MDA2NX0.UzEXpMaF8xyKQghQO7PvtuOy9mVhGmws_d88c_Sp4es'),
-(22, 'gui@gmail.com', '123', '2022-01-21 12:44:04', '2022-01-21 12:45:11', 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MjIsImlhdCI6MTY0Mjc2OTExMX0.f00VNK4rsrRf5ZHC6-oAbl1KXGzyJcPM1QWAhpPeMNA');
 
 --
 -- Indexes for dumped tables

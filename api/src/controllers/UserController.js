@@ -24,12 +24,12 @@ class UserController {
         const valid = v.validate(data, schema).valid;
 
         if(!valid) {
-            return res.status(400).json({
+            return res.status(403).json({
                 success: false,
-                message: "Objeto de entrada inválido",
-                json_expected: {
-                    email: 'string',
-                    password: 'string'
+                message: "JSON inválido",
+                errortype: {
+                    id: 1,
+                    name: 'INVALID_JSON'
                 }
             });
         }
@@ -51,6 +51,10 @@ class UserController {
             return res.status(500).json({
                 success: false,
                 message: 'Não foi possível cadastrar o usuário',
+                errortype: {
+                    id: 2,
+                    name: 'SERVER_NOT_RESPOND'
+                },
                 error: e.message
             })
         }
@@ -62,12 +66,12 @@ class UserController {
         const valid = v.validate(data, schema).valid;
 
         if(!valid) {
-            return res.status(400).json({
+            return res.status(403).json({
                 success: false,
-                message: "Objeto de entrada inválido",
-                json_expected: {
-                    email: 'string',
-                    password: 'string'
+                message: "JSON inválido",
+                errortype: {
+                    id: 1,
+                    name: 'INVALID_JSON'
                 }
             });
         }
@@ -76,11 +80,15 @@ class UserController {
             const check_account = await database.findOne({where: {email: data.email, password: data.password}});
 
             if(check_account == null) {
-                return res.status(403).json({
+                return res.status(404).json({
                     success: false,
                     auth: false,
                     message: "Não foi possível encontrar uma conta com essas credenciais",
-                    token: null
+                    token: null,
+                    errortype: {
+                        id: 3,
+                        name: 'NOT_FOUND'
+                    },
                 });
             }
 
@@ -95,14 +103,15 @@ class UserController {
             })
         }
         catch(e) {
-            return res.status(403).json({
+            return res.status(500).json({
                 success: false,
-                message: "Objeto de entrada inválido",
-                json_expected: {
-                    email: 'string',
-                    password: 'string'
-                }
-            });
+                message: 'Não foi possível cadastrar o usuário',
+                errortype: {
+                    id: 2,
+                    name: 'SERVER_NOT_RESPOND'
+                },
+                error: e.message
+            })
         }
     }
 }

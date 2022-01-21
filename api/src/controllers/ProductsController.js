@@ -14,6 +14,10 @@ const produtos = async (req, res) => {
         return res.status(500).json({
             success: false,
             name: 'Não foi possível buscar os produtos',
+            errortype: {
+                id: 2,
+                name: 'SERVER_NOT_RESPOND'
+            },
             error: e.message
         })
     }

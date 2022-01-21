@@ -24,17 +24,25 @@ class CarrinhoController {
             const usuario = await database_usuarios.findByPk(user_id);
 
             if(usuario == null) {
-                return res.status(403).json({
+                return res.status(401).json({
                     success: false,
                     auth: false,
+                    errortype: {
+                        id: 4,
+                        name: 'AUTH_FAILURE'
+                    },
                     message: "Não foi possível localizar o usuário"
                 });
             }
 
             if(usuario.token != token) {
-                res.status(403).json({
+                return res.status(401).json({
                     success: false,
                     auth: false,
+                    errortype: {
+                        id: 4,
+                        name: 'AUTH_FAILURE'
+                    },
                     message: "Usuário não autenticado"
                 })
             }
@@ -43,6 +51,10 @@ class CarrinhoController {
             return res.status(500).json({
                 success: false,
                 message: "Não foi possível trazer o carrinho do usuário",
+                errortype: {
+                    id: 2,
+                    name: 'SERVER_NOT_RESPOND'
+                },
                 error: e.message
             })
         }
@@ -52,7 +64,7 @@ class CarrinhoController {
             const carrinho = await CarregarCarrinho(user_id);
             
             //Buscar
-            res.status(200).json({
+            return res.status(200).json({
                 success: true,
                 cupom: carrinho.cupomname,
                 cupom_percent: carrinho.cupompercent,
@@ -69,6 +81,10 @@ class CarrinhoController {
                 auth: true,
                 http_response: 500,
                 message: "Não foi possível trazer o carrinho do usuário",
+                errortype: {
+                    id: 2,
+                    name: 'SERVER_NOT_RESPOND'
+                },
                 error: e.message
             })
         }
@@ -99,9 +115,13 @@ class CarrinhoController {
         const data = req.body;
         
         if(!v.validate(data, schema).valid) {
-            return res.status(400).json({
+            return res.status(403).json({
                 success: false,
-                message: "Objeto de entrada inválido"
+                message: "JSON inválido",
+                errortype: {
+                    id: 1,
+                    name: 'INVALID_JSON'
+                }
             });
         }
         
@@ -112,12 +132,20 @@ class CarrinhoController {
             if(check == null) {
                 return res.status(404).json({
                     success: false,
+                    errortype: {
+                        id: 3,
+                        name: 'NOTFOUND'
+                    },
                     message: "Carrinho inválido!"
                 })
             }
             if(check.usuarios_id != user_id) {
                 return res.status(404).json({
                     success: false,
+                    errortype: {
+                        id: 3,
+                        name: 'NOTFOUND'
+                    },
                     message: "Esse carrinho não pertence ao seu usuário!"
                 });
             }
@@ -126,7 +154,11 @@ class CarrinhoController {
             if(!data.produtos.length) { //Caso o usuário passe uma array de produtos vazia
                 return res.status(403).json({
                     success: false,
-                    message: "Nenhum item para ser adicionado"
+                    message: "JSON inválido - Informe uma array de produtos válida",
+                    errortype: {
+                        id: 1,
+                        name: 'INVALID_JSON'
+                    }
                 });
             }
             const errors = [];
@@ -137,13 +169,25 @@ class CarrinhoController {
                 
                 check = await database_prods.findByPk(produto);
                 if(check == null) { //Verificar se o produto existe no banco
-                    errors.push(`O produto ID: ${produto} não existe no estoque da loja!`)
+                    errors.push({
+                        id: 6,
+                        name: 'NOT_EXISTS_IN_STOCK',
+                        description: `O produto ID: ${produto} não existe no estoque da loja!`
+                    });
                 }
                 if(check != null && quantidade > check.estoque) { //Verificar se tem no estoque
-                    errors.push(`O produto ID: ${produto} só tem ${check.estoque} em seu estoque disponível`);
+                    errors.push({
+                        id: 7,
+                        name: 'QUANTIFY_OF_STOCK',
+                        description: `O produto ID: ${produto} só tem ${check.estoque} em seu estoque disponível`
+                    })
                 }
                 if(check_duplicados.includes(produto)) { //Verificar se o usuário mandou produtos duplicados
-                    errors.push(`O produto ID: ${produto} está duplicado no carrinho`);
+                    errors.push({
+                        id: 8,
+                        name: 'PRODUCT_DUPLICATED',
+                        description: `O produto ID: ${produto} está duplicado no carrinho`
+                    })
                 }
                 check_duplicados.push(produto);
 
@@ -152,12 +196,21 @@ class CarrinhoController {
                     produtos_id: produto
                 }});
                 if(check != null) {
-                    errors.push(`O produto ID: ${produto} já está adicionado ao seu carrinho!`);
+                    errors.push({
+                        id: 8,
+                        name: 'PRODUCT_DUPLICATED',
+                        description: `O produto ID: ${produto} já está adicionado ao seu carrinho!`
+                    })
                 }
             }
             if(errors.length) {
                 return res.status(403).json({
                     success: false,
+                    message: 'Multiplos erros',
+                    errortype: {
+                        id: 5,
+                        name: 'PRODUCT_ERRORS'
+                    },
                     errors: errors
                 })
             }
@@ -174,7 +227,7 @@ class CarrinhoController {
             const carrinho = await CarregarCarrinho(user_id);
             
             //Retornar o carrinho completo com os novos itens
-            res.status(200).json({
+            return res.status(200).json({
                 success: true,
                 message: "Produtos inseridos com sucesso!",
                 cupom: carrinho.cupomname,
@@ -190,6 +243,10 @@ class CarrinhoController {
             return res.status(500).json({
                 success: false,
                 message: "Não foi possível inserir itens ao carrinho do usuário",
+                errortype: {
+                    id: 2,
+                    name: 'SERVER_NOT_RESPOND'
+                },
                 error: e.message
             })
         }
@@ -210,9 +267,13 @@ class CarrinhoController {
         
         //Verificar se o JSON informado é o que se espera
         if(!v.validate(data, schema).valid) {
-            return res.status(400).json({
+            return res.status(403).json({
                 success: false,
-                message: "Objeto de entrada inválido"
+                message: "JSON inválido",
+                errortype: {
+                    id: 1,
+                    name: 'INVALID_JSON'
+                }
             });
         }
 
@@ -223,12 +284,20 @@ class CarrinhoController {
             if(check == null) {
                 return res.status(404).json({
                     success: false,
+                    errortype: {
+                        id: 3,
+                        name: 'NOTFOUND'
+                    },
                     message: "Carrinho inválido!"
                 })
             }
             if(check.usuarios_id != user_id) {
                 return res.status(404).json({
                     success: false,
+                    errortype: {
+                        id: 3,
+                        name: 'NOTFOUND'
+                    },
                     message: "Esse carrinho não pertence ao seu usuário!"
                 });
             }
@@ -238,6 +307,10 @@ class CarrinhoController {
             if(check == 0) {
                 return res.status(404).json({
                     success: false,
+                    errortype: {
+                        id: 3,
+                        name: 'NOTFOUND'
+                    },
                     message: "O carrinho já está vazio!"
                 });
             }
@@ -250,7 +323,7 @@ class CarrinhoController {
             const carrinho = await CarregarCarrinho(user_id);
             
             //Retornar o carrinho completo com os novos itens
-            res.status(200).json({
+            return res.status(200).json({
                 success: true,
                 message: "Carrinho limpo com sucesso!",
                 cupom: carrinho.cupomname,
@@ -266,6 +339,10 @@ class CarrinhoController {
             return res.status(500).json({
                 success: false,
                 message: "Não foi possível limpar o carrinho do usuário",
+                errortype: {
+                    id: 2,
+                    name: 'SERVER_NOT_RESPOND'
+                },
                 error: e.message
             });
         }
@@ -304,9 +381,13 @@ class CarrinhoController {
         
         //Verificar se o JSON informado é o que se espera
         if(!v.validate(data, schema).valid) {
-            return res.status(400).json({
+            return res.status(403).json({
                 success: false,
-                message: "Objeto de entrada inválido"
+                message: "JSON inválido",
+                errortype: {
+                    id: 1,
+                    name: 'INVALID_JSON'
+                }
             });
         }
 
@@ -317,12 +398,20 @@ class CarrinhoController {
             if(check == null) {
                 return res.status(404).json({
                     success: false,
+                    errortype: {
+                        id: 3,
+                        name: 'NOTFOUND'
+                    },
                     message: "Carrinho inválido!"
                 })
             }
             if(check.usuarios_id != user_id) {
                 return res.status(404).json({
                     success: false,
+                    errortype: {
+                        id: 3,
+                        name: 'NOTFOUND'
+                    },
                     message: "Esse carrinho não pertence ao seu usuário!"
                 });
             }
@@ -338,7 +427,11 @@ class CarrinhoController {
                 //Buscar cupom
                 check = await database_cupons.findOne({where: {codigo: data.cupom}});
                 if(check == null) {
-                    errors.push("Cupom inválido");
+                    errors.push({
+                        id: 9,
+                        name: 'INVALID_CUPOM',
+                        description: 'Cupom inválido'
+                    });
                 }
 
                 //Salvar cupom para adicionar ao carrinho após outras validações
@@ -351,16 +444,26 @@ class CarrinhoController {
 
                 //Verificar se o usuário informou uma array de objetos de produtos
                 if(produtos.length == 0) {
-                    return res.status(404).json({
-                        success: false,
-                        message: 'Array de produtos vazia'
-                    })
+                    if(!data.produtos.length) { //Caso o usuário passe uma array de produtos vazia
+                        return res.status(403).json({
+                            success: false,
+                            message: "JSON inválido - Informe uma array de produtos válida",
+                            errortype: {
+                                id: 1,
+                                name: 'INVALID_JSON'
+                            }
+                        });
+                    }
                 }
 
                 //Verificar se tem algo no carrinho do usuário
                 if(itens_carrinho.length == 0) {
                     return res.status(404).json({
                         success: false,
+                        errortype: {
+                            id: 3,
+                            name: 'NOTFOUND'
+                        },
                         message: 'O carrinho do usuário está vazio'
                     })
                 }
@@ -369,13 +472,21 @@ class CarrinhoController {
 
                     //Caso não tenha nenhum elemento para o produto
                     if(Object.keys(produto).length == 0) {
-                        errors.push(`Objeto de produto vazio - Array ID: ${idx}`);
+                        errors.push({
+                            id: 1,
+                            name: 'INVALID_JSON',
+                            description: `Objeto de produto vazio - Array ID: ${idx}`
+                        });
                         continue;
                     }
                     for(let idkey in Object.keys(produto)) {
                         if(Object.keys(produto)[idkey] == 'produto_id') continue;
                         if(!Object.keys(produto)[idkey].includes(schemaProdutos)) {
-                            errors.push(`O elemento ${Object.keys(produto)[idkey]} não é aceito para atualização dos produtos`);
+                            errors.push({
+                                id: 10,
+                                name: 'ELEMENT_REFUSED',
+                                description: `O elemento ${Object.keys(produto)[idkey]} não é aceito para atualização dos produtos`
+                            });
                             continue;
                         }
                     }
@@ -390,21 +501,33 @@ class CarrinhoController {
                         }
                     }
                     if(!encontrou) {
-                        errors.push(`O produto ID ${produto.produto_id} não pertence ao carrinho do usuário`);
+                        errors.push({
+                            id: 11,
+                            name: 'PRODUCT_NOT_BELONG_USER',
+                            description: `O produto ID ${produto.produto_id} não pertence ao carrinho do usuário`
+                        });
                     }
 
                     //Verificar se a nova quantidade condiz com o estoque
                     const estoque = await database_prods.findByPk(produto.produto_id);
                     if(produto.quantidade > estoque.estoque) {
-                        errors.push(`O produto ID ${produto.produto_id} só tem ${estoque.estoque} unidades no estoque`);
+                        errors.push({
+                            id: 5,
+                            name: 'QUANTIFY_OF_STOCK',
+                            description: `O produto ID ${produto.produto_id} só tem ${estoque.estoque} unidades no estoque`
+                        });
                     }
                 }
             }
             
             if(errors.length) {
-                return res.status(404).json({
+                return res.status(403).json({
                     success: false,
-                    message: "Houve erro de validação",
+                    message: "Multiplos erros",
+                    errortype: {
+                        id: 5,
+                        name: 'PRODUCT_ERRORS'
+                    },
                     errors: errors
                 })
             }
@@ -466,7 +589,7 @@ class CarrinhoController {
             const carrinho = await CarregarCarrinho(user_id);
             
             //Retornar o carrinho completo com os novos itens
-            res.status(200).json({
+            return res.status(200).json({
                 success: true,
                 message: "Carrinho atualizado com sucesso!",
                 cupom: carrinho.cupomname,

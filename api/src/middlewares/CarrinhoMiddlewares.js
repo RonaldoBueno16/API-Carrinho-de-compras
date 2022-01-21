@@ -13,7 +13,7 @@ const middlewares = (req, res, next) => {
     
     jwt.verify(token, process.env.SECRET, (err, decoded) => {
         if(err) {
-            return res.status(403).json({
+            return res.status(401).json({
                 success: false,
                 auth: false,
                 message: "Usuário não autenticado, logue novamente!"

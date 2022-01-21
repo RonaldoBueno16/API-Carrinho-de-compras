@@ -1,20 +1,17 @@
 //Database
 const database = require('../models').produtos;
 
-//Web Token
-const jwt = require('jsonwebtoken');
-
-const listProds = async (req, res) => {
+const produtos = async (req, res) => {
     try {
         const data = await database.findAll({where: {disponivel: true}}); //Filtrar todos os produtos disponíveis
         
-        res.status(200).json({
+        return res.status(200).json({
             success: true,
             products: data
         })
     }
     catch(e) {
-        res.status(500).json({
+        return res.status(500).json({
             success: false,
             name: 'Não foi possível buscar os produtos',
             error: e.message
@@ -22,4 +19,4 @@ const listProds = async (req, res) => {
     }
 };
 
-module.exports = listProds;
+module.exports = produtos;

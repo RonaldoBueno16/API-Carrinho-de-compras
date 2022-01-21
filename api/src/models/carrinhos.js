@@ -1,3 +1,5 @@
+
+
 'use strict';
 const {
   Model
@@ -10,7 +12,11 @@ module.exports = (sequelize, DataTypes) => {
      * The `models/index` file will call this method automatically.
      */
     static associate(models) {
-      // define association here
+      carrinhos.hasMany(models.itens_carrinho, 
+        {foreignKey: 'carrinhos_id', as: 'itens_carrinho'})
+
+        //Associação de um para muitos - Um carrinho pode ter vários itens
+        
     }
   }
   carrinhos.init({

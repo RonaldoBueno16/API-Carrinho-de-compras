@@ -10,7 +10,10 @@ module.exports = (sequelize, DataTypes) => {
      * The `models/index` file will call this method automatically.
      */
     static associate(models) {
-      // define association here
+      itens_carrinho.belongsTo(models.carrinhos, {foreignKey: 'id', as: 'carrinho'});
+      itens_carrinho.hasMany(models.produtos, {foreignKey: 'id', as: 'itens_carrinho_produtos'});
+
+      //Vários itens de carrinho pertence à um carrinho
     }
   }
   itens_carrinho.init({

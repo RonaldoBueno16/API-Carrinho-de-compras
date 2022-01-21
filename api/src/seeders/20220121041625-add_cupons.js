@@ -5,11 +5,15 @@ module.exports = {
     return queryInterface.bulkInsert('cupons', [
       {
         codigo: 'EXTRAGOOD',
-        desconto: 0.05
+        desconto: 0.05,
+        createdAt: new Date(),
+        updatedAt: new Date()
       },
       {
         codigo: '20PORCENTO',
-        desconto: 0.2
+        desconto: 0.2,
+        createdAt: new Date(),
+        updatedAt: new Date()
       }
     ])
   },

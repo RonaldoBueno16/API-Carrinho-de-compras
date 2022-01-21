@@ -4,6 +4,8 @@ const cors = require('cors');
 // const routes = require('../routes/routes');
 const jwt = require('jsonwebtoken');
 
+console.log("Cheogu aq");
+
 const routePath = './src/routes/';
 
 class App {

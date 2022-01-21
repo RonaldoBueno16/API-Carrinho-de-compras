@@ -9,7 +9,8 @@ module.exports = {
         type: Sequelize.INTEGER
       },
       codigo: {
-        type: Sequelize.STRING
+        type: Sequelize.STRING,
+        unique: true
       },
       desconto: {
         type: Sequelize.DOUBLE

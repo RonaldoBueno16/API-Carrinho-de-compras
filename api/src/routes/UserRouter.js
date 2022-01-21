@@ -4,7 +4,11 @@ require('dotenv').config();
 
 const controller = require('../controllers/UserController');
 
-route.post(`${process.env.rotas}/login`, controller.login); //Gerar o token para o usuário poder começar usar o carrinho
-route.post(`${process.env.rotas}/cadastro`, controller.cadastro); //Cadastrar usuário no banco
+route.get('/', () => {
+    console.log("oi");
+})
+
+route.post(`/api/v1/login`, controller.login); //Gerar o token para o usuário poder começar usar o carrinho
+route.post(`/api/v1/cadastro`, controller.cadastro); //Cadastrar usuário no banco
 
 module.exports = route;

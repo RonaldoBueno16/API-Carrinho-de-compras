@@ -8,10 +8,10 @@ module.exports = {
         primaryKey: true,
         type: Sequelize.INTEGER
       },
-      carrinho_id: {
+      carrinhos_id: {
         type: Sequelize.INTEGER
       },
-      produto_id: {
+      produtos_id: {
         type: Sequelize.INTEGER
       },
       quantidade: {

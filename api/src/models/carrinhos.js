@@ -23,7 +23,8 @@ module.exports = (sequelize, DataTypes) => {
     usuarios_id: DataTypes.INTEGER,
     num_produtos: DataTypes.INTEGER,
     total: DataTypes.DOUBLE,
-    subtotal: DataTypes.DOUBLE
+    subtotal: DataTypes.DOUBLE,
+    cupom: DataTypes.INTEGER
   }, {
     sequelize,
     modelName: 'carrinhos',

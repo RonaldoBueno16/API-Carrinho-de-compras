@@ -44,7 +44,7 @@ const GetCarrinho = async (req, res, next) => {
             error: e.message
         })
     }
-
+    
     //Trazer o carrinho do usuário
     try {
         //Buscar o carrinho e os itens
@@ -84,14 +84,21 @@ const GetCarrinho = async (req, res, next) => {
         //Transformar o ID do item no produto em si
         for(index in carrinho.itens_carrinho) {
             const produto = carrinho.itens_carrinho[index].produtos_id;
-            
             const prodQuery = await database_prods.findByPk(produto);
+
+            //Validar se tem no estoque a quantidade que ele deseja comprar
+            const estoque = prodQuery.estoque;
+            const quantidade = carrinho.itens_carrinho[index].quantidade;
+            let observacao = null;
+            
+            
             carrinho.itens_carrinho[index] = {
                 nome: prodQuery.nome,
                 descricao: prodQuery.descricao,
                 preco: prodQuery.preco,
-                estoque: prodQuery.estoque,
-                disponivel: prodQuery.disponivel
+                quantidade: carrinho.itens_carrinho[index].quantidade,
+                disponivel: prodQuery.disponivel,
+                observacao: (quantidade > estoque) ? (`Quantidade insuficiente no estoque: ${estoque}`) : null
             };
         }
         

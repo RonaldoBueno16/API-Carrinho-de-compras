@@ -279,12 +279,18 @@ class CarrinhoController {
                 const produto = data.produtos[idx];
                 //Verificar se todos os produtos informados de fato são do usuário
                 
-                check.forEach((product) => {
+                let encontrou = false;
+                for(let productid in check) {
+                    const product = check[productid];
+
                     if(product.produtos_id == produto.produto_id) {
-                        return;
+                        encontrou = true;
+                        break;
                     }
+                }
+                if(!encontrou) {
                     errors.push(`O produto ID ${produto.produto_id} não consta no carrinho do usuário!`);
-                })
+                }
             }
             if(errors.length) {
                 return res.status(400).json({
@@ -295,28 +301,24 @@ class CarrinhoController {
             }
 
             //Remover ou atualizar a quantidade de itens do carrinho
-            let itens_removidos;
-            let itens_atualizados;
             for(let idx in data.produtos) {
                 const produto = data.produtos[idx];
-                check.forEach((product) => {    
+
+                for(let productid in check) {
+                    const product = check[productid];
                     if(product.produtos_id == produto.produto_id) {
                         const result = product.quantidade - produto.quantidade;
                         
                         if(result <= 0) {
                             //Remover do banco de dados
-                            product.destroy();
-                            itens_removidos++;
-                            return;
+                            await product.destroy();
                         }
 
                         //Atualizar os dados
                         product.quantidade = result;
-                        product.save();
-                        itens_atualizados++;
-                        return;
+                        await product.save();
                     }
-                })
+                }
             }
 
             //Carregar o carrinho
@@ -340,6 +342,84 @@ class CarrinhoController {
                 error: e.message
             });
         }
+    }
+
+    static async limparCarrinho(req, res, next) {
+        const user_id = req.user_id;
+
+        const schema = {
+            type: 'object',
+            properties: {
+                carrinho_id: {type: 'integer'}
+            },
+            required: ['carrinho_id']
+        };
+
+        const data = req.body;
+        
+        //Verificar se o JSON informado é o que se espera
+        if(!v.validate(data, schema).valid) {
+            return res.status(400).json({
+                success: false,
+                message: "Objeto de entrada inválido",
+                json_expected: {
+                    carrinho_id: 'ID do carrinho'
+                }
+            });
+        }
+
+        //Verificar se o carrinho é do usuário autenticado
+        try {
+            //Se o carrinho é nulo || Se o carrinho pertence ao usuário 
+            let check = await database_carrinhos.findByPk(data.carrinho_id);
+            if(check == null) {
+                return res.status(404).json({
+                    success: false,
+                    message: "Carrinho inválido!"
+                })
+            }
+            if(check.usuarios_id != user_id) {
+                return res.status(404).json({
+                    success: false,
+                    message: "Esse carrinho não pertence ao seu usuário!"
+                });
+            }
+
+            //Verifica a quantidade de itens no carrinho
+            check = await database_itens_carrinho.count({where: {carrinhos_id: data.carrinho_id}});
+            if(check == 0) {
+                return res.status(404).json({
+                    success: false,
+                    message: "O carrinho já está vazio!"
+                });
+            }
+
+            //Deletar todos os itens do carrinho
+            check = await database_itens_carrinho.destroy({where: {carrinhos_id: data.carrinho_id}});
+            const itens_deletados = check;
+
+            //Retornar o carrinho novo do cliente
+            const carrinho = await CarregarCarrinho(user_id);
+            
+            //Retornar o carrinho completo com os novos itens
+            res.status(200).json({
+                success: true,
+                message: "Carrinho limpo com sucesso!",
+                num_produtos: carrinho.num_produtos,
+                carrinho_id: carrinho.id,
+                total: carrinho.total,
+                subtotal: carrinho.subtotal,
+                itens_carrinho: carrinho.itens_carrinho
+            });
+        }
+        catch (e) {
+            return res.status(500).json({
+                success: false,
+                message: "Não foi possível limpar o carrinho do usuário",
+                error: e.message
+            });
+        }
+
     }
 }
 

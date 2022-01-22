@@ -43,32 +43,6 @@ Quando uma requisição falha por algum motivo, ela sempre enviará um JSON info
 | 11 | PRODUCT_NOT_BELONG_USER | Quando o produto não pertence ao carrinho do usuário |
   
 ## Rotas
-  ### Trazer todos os produtos do banco de dados
-  `[GET] - /api/v1/produtos`
-  ##### Metodo utilizado para trazer todos os produtos da loja.
-  
-  Request:
-  <code>NULL</code>
-  
-  Response:
-  ```
-  {
-    "success": true,
-    "products": [
-        {
-            "id": id_do_produto,
-            "nome": nome_do_produto,
-            "preco": preco_do_produto,
-            "estoque": quantidade_do_produto_no_estoque,
-            "descricao": descricao,
-            "disponivel": se_o_produto_esta_disponivel,
-            "createdAt": disponivel_desde,
-            "updatedAt": ultima_att_nos_precos
-        }
-    ]
-}
-  ```
-  
   ### Cadastro de usuários
   `[POST] - /api/v1/cadastro`
   ##### Metodo utilizado para cadastrar um novo usuário ao banco de dados.
@@ -90,7 +64,7 @@ Quando uma requisição falha por algum motivo, ela sempre enviará um JSON info
   }
   ```
   
-  ### Autenticação de login
+  ### Autenticação de login (TOKEN)
   `[POST] - /api/v1/login`
   ##### Metodo utilizado para autenticar o usuário e obter um token válido
   Content-Type: application/JSON
@@ -124,7 +98,31 @@ Quando uma requisição falha por algum motivo, ela sempre enviará um JSON info
     }
 }
   ```
+  ### Trazer todos os produtos do banco de dados
+  `[GET] - /api/v1/produtos`
+  ##### Metodo utilizado para trazer todos os produtos da loja e obter o produto_id.
   
+  Request:
+  <code>NULL</code>
+  
+  Response:
+  ```
+  {
+    "success": true,
+    "products": [
+        {
+            "id": id_do_produto,
+            "nome": nome_do_produto,
+            "preco": preco_do_produto,
+            "estoque": quantidade_do_produto_no_estoque,
+            "descricao": descricao,
+            "disponivel": se_o_produto_esta_disponivel,
+            "createdAt": disponivel_desde,
+            "updatedAt": ultima_att_nos_precos
+        }
+    ]
+}
+  ```
   ### Buscar o carrinho do cliente
   `[GET] - /api/v1/carrinho/`
   ##### Metodo utilizado para recuperar o carrinho do cliente, gerenciar totais, subtotais e mostrar o cupom

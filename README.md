@@ -71,7 +71,7 @@ Quando uma requisição falha por algum motivo, ela sempre enviará um JSON info
   
   ### Cadastro de usuários
   `[POST] - /api/v1/cadastro`
-  
+  ##### Metodo utilizado para cadastrar um novo usuário ao banco de dados.
   Content-Type: application/JSON
     
   Body Request:
@@ -92,7 +92,7 @@ Quando uma requisição falha por algum motivo, ela sempre enviará um JSON info
   
   ### Autenticação de login
   `[POST] - /api/v1/login`
-  
+  ##### Metodo utilizado para autenticar o usuário e obter um token válido
   Content-Type: application/JSON
     
   Body Request:
@@ -104,7 +104,7 @@ Quando uma requisição falha por algum motivo, ela sempre enviará um JSON info
   ```
   
   Response:
-  ```json
+  ```
   Sucesso:
   {
     "success": true,
@@ -127,7 +127,7 @@ Quando uma requisição falha por algum motivo, ela sempre enviará um JSON info
   
   ### Buscar o carrinho do cliente
   `[GET] - /api/v1/carrinho/`
-  
+  ##### Metodo utilizado para recuperar o carrinho do cliente, gerenciar totais, subtotais e mostrar o cupom
   Request:
   <code>Authorization -> Bearer Token</code>
   
@@ -157,11 +157,12 @@ Quando uma requisição falha por algum motivo, ela sempre enviará um JSON info
   
   ### Adicionar item no carrinho
   `[POST] - /api/v1/carrinho/inserir_item/`
+  ##### Metodo utilizado para adicionar um item novo ao carrinho
   
   Request:
   <code>Authorization -> Bearer Token</code></br></br>
   <code>Content-Type: application/json (BODY)</code>
-  ```javascript
+  ```
   {
     "carrinho_id": id_carrinho,
     "produtos": [
@@ -180,7 +181,7 @@ Quando uma requisição falha por algum motivo, ela sempre enviará um JSON info
   
   ### Atualizar carrinho
   `[PUT] - /api/v1/carrinho/atualizar/`
-  ##### OBS: Esse metodo pode ser utilizado tanto para acrescentar / remover itens do carrinho ou adicionar cupom ao carrinho
+  ##### Metodo utilizado tanto para acrescentar / remover itens do carrinho ou adicionar cupom ao carrinho
   
   Request:
   <code>Authorization -> Bearer Token</code></br></br>

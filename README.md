@@ -4,7 +4,7 @@
 
 - Docker (<link>https://www.docker.com/products/docker-desktop</link>)
 
-## Instalação
+## Preparação do ambiente
 
 #### 1 - Clonar o repositório: <code>git clone https://github.com/RonaldoBueno16/Loja-Integrada.git</code>
 #### 2 - Iniciar o banco de dados, dentro da pasta raiz do projeto(.../Loja Integrada) USE:
@@ -43,6 +43,32 @@ Quando uma requisição falha por algum motivo, ela sempre enviará um JSON info
 | 11 | PRODUCT_NOT_BELONG_USER | Quando o produto não pertence ao carrinho do usuário |
   
 ## Rotas
+  ### Trazer todos os produtos do banco de dados
+  `[GET] - /api/v1/produtos`
+  ##### Metodo utilizado para trazer todos os produtos da loja.
+  
+  Request:
+  <code>NULL</code>
+  
+  Response:
+  ```
+  {
+    "success": true,
+    "products": [
+        {
+            "id": id_do_produto,
+            "nome": nome_do_produto,
+            "preco": preco_do_produto,
+            "estoque": quantidade_do_produto_no_estoque,
+            "descricao": descricao,
+            "disponivel": se_o_produto_esta_disponivel,
+            "createdAt": disponivel_desde,
+            "updatedAt": ultima_att_nos_precos
+        }
+    ]
+}
+  ```
+  
   ### Cadastro de usuários
   `[POST] - /api/v1/cadastro`
   
@@ -64,9 +90,143 @@ Quando uma requisição falha por algum motivo, ela sempre enviará um JSON info
   }
   ```
   
-  Possíveis erros:
-  | Codigo do erro | Erro | Razão |
-  | :---: | :---: | :---: |
-  | 1 | INVALID_JSON | Quando o usuário envia um JSON inválido |
-  | 2 | SERVER_NOT_RESPOND | Quando ocorre algum erro de servidor |
+  ### Autenticação de login
+  `[POST] - /api/v1/login`
   
+  Content-Type: application/JSON
+    
+  Body Request:
+  ```json
+  {
+    "email": "example@hotmail.com",
+    "password": "example_password"
+  }
+  ```
+  
+  Response:
+  ```json
+  Sucesso:
+  {
+    "success": true,
+    "auth": true,
+    "message": "Usuário logado com sucesso!",
+    "token": "token"
+  }
+  Falha:
+  {
+    "success": false,
+    "auth": false,
+    "message": "Não foi possível encontrar uma conta com essas credenciais",
+    "token": null,
+    "errortype": {
+        "id": 3,
+        "name": "NOT_FOUND"
+    }
+}
+  ```
+  
+  ### Buscar o carrinho do cliente
+  `[GET] - /api/v1/carrinho/`
+  
+  Request:
+  <code>Authorization -> Bearer Token</code>
+  
+  Exemple Response:
+  ```json
+  {
+      "success": true,
+      "cupom": null,
+      "cupom_percent": null,
+      "num_produtos": 1,
+      "carrinho_id": 3,
+      "total": 101,
+      "subtotal": 101,
+      "itens_carrinho": [
+          {
+              "produto_id": 1,
+              "nome": "Jaleco",
+              "descricao": "Jaleco de alta qualidade para atender aos clientes mais exigentes",
+              "preco": 101,
+              "quantidade": 1,
+              "disponivel": true,
+              "observacao": null
+          }
+      ]
+  }
+  ```
+  
+  ### Adicionar item no carrinho
+  `[POST] - /api/v1/carrinho/inserir_item/`
+  
+  Request:
+  <code>Authorization -> Bearer Token</code></br></br>
+  <code>Content-Type: application/json (BODY)</code>
+  ```javascript
+  {
+    "carrinho_id": id_carrinho,
+    "produtos": [
+        {
+            "produto_id": id_do_produto,
+            "quantidade": quantidade_desse_produto
+        }
+    ]
+  }
+  ```
+  
+  Response:
+  ```
+  Retorna o carrinho do usuário com todos os itens - Identico ao retorno do Buscar o carrinho do cliente
+  ```
+  
+  ### Atualizar carrinho
+  `[PUT] - /api/v1/carrinho/atualizar/`
+  ##### OBS: Esse metodo pode ser utilizado tanto para acrescentar / remover itens do carrinho ou adicionar cupom ao carrinho
+  
+  Request:
+  <code>Authorization -> Bearer Token</code></br></br>
+  <code>Content-Type: application/json (BODY)</code>
+  ```javascript
+  {
+    "carrinho_id": id_do_carrinho,
+    "cupom": codigo, //(opcional)
+    "produtos": [//opcional
+        {
+            "produto_id": id_do_produto,
+            "quantidade": quantidade_do_item_no_carrinho
+        }
+    ]
+}
+  ```
+  
+  Response:
+  ```
+  Retorna o carrinho do usuário com todos os itens - Identico ao retorno do Buscar o carrinho do cliente
+  ```
+  
+  ### Limpar carrinho
+  `[DELETE] - /api/v1/carrinho/limpar/`
+  ##### Metodo utilizado para limpar todos os produtos do carrinho do cliente.
+  
+  Request:
+  <code>Authorization -> Bearer Token</code></br></br>
+  <code>Content-Type: application/json (BODY)</code>
+  ```javascript
+  {
+    "carrinho_id": id_do_carrinho,
+}
+  ```
+  
+  Response:
+  ```
+  {
+    "success": true,
+    "message": "Carrinho limpo com sucesso!",
+    "cupom": "LOJAINTEGRADA_5",
+    "cupom_percent": "5%",
+    "num_produtos": 0,
+    "carrinho_id": 2,
+    "total": 0,
+    "subtotal": 0,
+    "itens_carrinho": []
+}
+  ```

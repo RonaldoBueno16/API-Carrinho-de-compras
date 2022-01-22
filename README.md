@@ -1,4 +1,4 @@
-# Instalação do projeto
+# API de Carrinho - Desafio Loja Integrada
 
 ### Requisitos
 

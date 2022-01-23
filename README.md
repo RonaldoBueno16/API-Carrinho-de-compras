@@ -16,14 +16,6 @@
 #### 4 - Iniciar a API, dentro da pasta raiz do projeto(.../Loja Integrada) USE:
 <code>docker build -t api_carrinho ${pwd}/api/</code></br>
 <code>docker run --rm --name=api-carrinho --detach --link mysql-container --publish 3000:3000 api_carrinho</code></br>
-
-#### Cupons disponíveis para uso:
-- LOJAINTEGRADA_5
-- LOJAINTEGRADA_10
-- LOJAINTEGRADA_15
-- LOJAINTEGRADA_20
-- LOJAINTEGRADA_25
-- LOJAINTEGRADA_30
 	
 # API
   
@@ -188,7 +180,7 @@ Quando uma requisição falha por algum motivo, ela sempre enviará um JSON info
   ### Atualizar carrinho
   `[PUT] - /api/v1/carrinho/atualizar/`
   ##### Metodo utilizado tanto para acrescentar / remover itens do carrinho ou adicionar cupom ao carrinho
-  
+	
   Request:
   <code>Authorization -> Bearer Token</code></br></br>
   <code>Content-Type: application/json (BODY)</code>
@@ -209,6 +201,16 @@ Quando uma requisição falha por algum motivo, ela sempre enviará um JSON info
   ```
   Retorna o carrinho do usuário com todos os itens - Identico ao retorno do Buscar o carrinho do cliente
   ```
+	
+	Cupons disponíveis para uso:
+	LOJAINTEGRADA_5
+	LOJAINTEGRADA_10
+	LOJAINTEGRADA_15
+	LOJAINTEGRADA_20
+	LOJAINTEGRADA_25
+	LOJAINTEGRADA_30
+	
+
   
   ### Limpar carrinho
   `[DELETE] - /api/v1/carrinho/limpar/`
@@ -228,8 +230,8 @@ Quando uma requisição falha por algum motivo, ela sempre enviará um JSON info
   {
     "success": true,
     "message": "Carrinho limpo com sucesso!",
-    "cupom": "LOJAINTEGRADA_5",
-    "cupom_percent": "5%",
+    "cupom": null,
+    "cupom_percent": null,
     "num_produtos": 0,
     "carrinho_id": 2,
     "total": 0,

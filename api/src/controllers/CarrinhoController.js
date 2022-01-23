@@ -321,6 +321,10 @@ class CarrinhoController {
 
             //Retornar o carrinho novo do cliente
             const carrinho = await CarregarCarrinho(user_id);
+
+            carrinho.cupom = null;
+            await carrinho.save();
+            carrinho.cupom_percent = null;
             
             //Retornar o carrinho completo com os novos itens
             return res.status(200).json({

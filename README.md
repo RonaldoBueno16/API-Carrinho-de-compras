@@ -9,7 +9,7 @@
 #### 1 - Clonar o repositório: <code>git clone https://github.com/RonaldoBueno16/Loja-Integrada.git</code>
 #### 2 - Iniciar o banco de dados, dentro da pasta raiz do projeto(.../Loja Integrada) USE:
 <code>docker build -t mysql-image -f ${pwd}/db/Dockerfile .</code></br>
-<code>docker run --rm --name=mysql-container --env MYSQL_ROOT_PASSWORD=lojaintegrada --detach --publish 3306:3306 mysql</code>
+<code>docker run -d -v ${pwd}/api/db/data:/var/lib/mysql --rm --name=mysql-container --env MYSQL_ROOT_PASSWORD=lojaintegrada --detach --publish 3306:3306 mysql</code>
 #### 3 - Popular o banco de dados com os dados iniciais:
 ###### NO POWERSHELL: <code>cmd /c "docker exec -i mysql-container mysql -uroot -plojaintegrada < script.sql"</code>
 

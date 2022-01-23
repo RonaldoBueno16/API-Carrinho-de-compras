@@ -35,6 +35,15 @@ class UserController {
         }
 
         try {
+            //Verificar email repetido
+            const check = await database.findOne({where: {email: data.email}});
+            if(check != null) {
+                return res.status(403).json({
+                    success: false,
+                    message: 'Já existe um usuário com esse email cadastrado!'
+                });
+            }
+            
             const response = await database.create({
                 email: data.email,
                 password: data.password,

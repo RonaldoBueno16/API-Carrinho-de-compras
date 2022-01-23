@@ -659,7 +659,7 @@ async function CarregarCarrinho(user_id) {
         let observacao = null;
 
         //Somar valor
-        valor_total += prodQuery.preco;
+        valor_total += prodQuery.preco*carrinho.itens_carrinho[idx].quantidade;
         
         carrinho.itens_carrinho[idx] = {
             produto_id: prodQuery.id,

@@ -17,6 +17,14 @@
 <code>docker build -t api_carrinho ${pwd}/api/</code></br>
 <code>docker run --rm --name=api-carrinho --detach --link mysql-container --publish 3000:3000 api_carrinho</code></br>
 
+#### Cupons disponíveis para uso:
+- LOJAINTEGRADA_5
+- LOJAINTEGRADA_10
+- LOJAINTEGRADA_15
+- LOJAINTEGRADA_20
+- LOJAINTEGRADA_25
+- LOJAINTEGRADA_30
+	
 # API
   
 ### Autorização

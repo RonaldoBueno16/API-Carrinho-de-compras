@@ -66,10 +66,10 @@ class CarrinhoController {
             //Buscar
             return res.status(200).json({
                 success: true,
+                carrinho_id: carrinho.id,
                 cupom: carrinho.cupomname,
                 cupom_percent: carrinho.cupompercent,
                 num_produtos: carrinho.num_produtos,
-                carrinho_id: carrinho.id,
                 total: carrinho.total,
                 subtotal: carrinho.subtotal,
                 itens_carrinho: carrinho.itens_carrinho

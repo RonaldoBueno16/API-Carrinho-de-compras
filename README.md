@@ -228,4 +228,13 @@ Quando uma requisição falha por algum motivo, ela sempre enviará um JSON info
     "subtotal": 0,
     "itens_carrinho": []
 }
+  ou
+{
+	"success": false,
+	"errortype": {
+		"id": 3,
+		"name": "NOTFOUND"
+	},
+	"message": "O carrinho já está vazio!"
+}
   ```
